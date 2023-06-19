@@ -1,0 +1,322 @@
+<body>
+    <div class="nav"><div class="game">RAT IN A MAZE</div></div>
+    <p id="notify"></p>
+    
+    
+    <img src="jerry.jpg" id="i">
+  <div id='root'><img id="jerry"src="jerry.png" alt=""><img id="tom"src="tom.jpg" alt=""></div>
+  <button id="btn">START</button>
+  <p id="notify"></p>
+  
+  </body>
+  
+  
+  <style>
+    #tom{
+      margin-left: 1200px;
+      margin-top: 200px;
+      height:200px;
+      width: 300px;
+    }
+    #jerry{
+      height:400px;
+      width:400px;
+      float: left;
+      margin-top: 80px;
+    }
+    #root{
+      float: left;
+      
+    }
+    .game{
+      color: white;
+      font-size: 50px;
+      text-align: center;
+      font-family: 'Courgette', cursive;
+      font-weight: bolder;
+    }
+    .nav{
+      position: sticky;
+      opacity: 0.4;
+      border:2px solid black;
+      padding: 10px;
+      background-color: black;
+    }
+    body{
+      background-image: url("https://images.unsplash.com/photo-1557683304-673a23048d34?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=282&q=80");
+      background-size: 1600px 1800px;
+      background-repeat: no-repeat;
+    }
+  
+    img{
+      height: 75px;
+      width: 75px;
+      position:absolute;
+      transition-duration: 1s;
+    }
+  
+   td,table {
+    border: 1px solid black;
+  }
+  
+  table {
+    border-collapse: collapse;
+    margin-left: 550px;
+      margin-top: 80px;
+  }
+  
+  td {
+    width: 80px;
+    height: 80px;
+  }
+  
+  #btn{
+    margin-top: 550px;
+    margin-left: -970px;
+    padding: 5px;
+    height: 50px;
+    width: 110px;
+    font-weight: bold;
+    font-size: 30px;
+    background-color: purple;
+    border:2px dashed black;
+    
+  font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  
+  }
+  
+  #notify{
+    font-family: cursive;
+    margin-left: 450px;
+  }
+  
+  
+  
+  </style>
+  
+  
+  
+  <script>
+    
+   
+  
+  let div=document.getElementById('root');
+  let move=[[0,0,0,0,0,0,0,0,0],[0,1,0,1,1,0,-1,-1,-1],[0,1,1,0,-1,-1,-1,0,1]];
+  let mark=[[1,1,1,1,1,1],[1,0,0,0,0,1],[1,0,1,1,0,1],[1,1,0,1,1,1],[1,0,0,0,0,1],[1,1,1,1,1,1]];
+  let maze=[[1,1,1,1,1,1],[1,0,0,0,0,1],[1,0,1,1,0,1],[1,1,0,1,1,1],[1,0,0,0,0,1],[1,1,1,1,1,1]];
+  let back_track=new Array(2);
+  back_track[0]=new Array(100);
+  back_track[1]=new Array(100);
+  let m=maze.length-2;
+  let n=maze[0].length-2;
+  let stack=new Array(4);
+  stack[0]=new Array(100);
+  stack[1]=new Array(100);
+  stack[2]=new Array(100);
+  stack[3]=new Array(100);
+  let top_of_stack=0,i=0,j=0,g=0,h=0,dir=0;
+  let image=document.getElementById('i');
+  let margin_top=166,margin_left=-420;
+  image.style.marginTop=margin_top;
+    image.style.marginLeft=margin_left;
+  let count=0;
+  
+  
+  function draw(arr){
+    let table=document.createElement('table');
+  for(let a=0;a<arr.length;a++){
+    let tr=document.createElement("tr");
+    for(let b=0;b<arr[a].length;b++){
+  let td=document.createElement('td');
+  if(arr[1][1]==1){
+    let notify=document.getElementById('notify');
+    notify.innerText=" There no start path for Jerry to enter..";
+    notify.style.color="white";
+    notify.style.fontWeight="bold";
+    notify.style.fontSize=30;
+    image.style.display="none";
+  }
+  else if(a==1 && b==1 && arr[a][b]!=1){
+    td.style.backgroundColor="white";
+    td.innerText="START";
+    td.style.justifyContent="center";
+    td.style.textAlign="center";
+    td.style.fontSize=25;
+    td.style.fontWeight="bold";
+    td.style.color="green";
+  }
+  else if(a==arr.length-2 && b==arr[a].length-2 && arr[a][b]!=1){
+    td.style.backgroundColor="white";
+    td.innerText="FINISH";
+    td.style.justifyContent="center";
+    td.style.textAlign="center";
+    td.style.fontSize=25;
+    td.style.fontWeight="bold";
+    td.style.color="red";
+  }
+  if(arr[a][b]==1){
+    td.style.backgroundColor="lightblue";
+  }
+  tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+  div.appendChild(table);
+  }
+  
+  draw(maze);
+  
+  
+  
+  
+  
+  
+  function path(maze,mark,m,n,move,stack){
+    
+  stack[1][1]=1;
+  stack[2][1]=1;
+  stack[3][1]=2;
+  
+  
+  top_of_stack=1;
+  if(m<1 || n<1){
+    let notify=document.getElementById('notify');
+    notify.innerText="Grid is too small to traverse. Oh! Tom caught Jerry";
+    notify.style.color="white";
+    notify.style.fontWeight="bold";
+    notify.style.fontSize=40;
+    console.log("Grid is too small to traverse.");
+    image.style.display="none";
+    return;
+  }
+  
+  if(m==1 && n==1){
+    let notify=document.getElementById('notify');
+    notify.innerText="You are in the end position. Hurray!! Jerry have been escaped from Tom";
+    notify.style.color="white";
+    notify.style.fontWeight="bold";
+    notify.style.fontSize=40;
+    console.log("You are in the end position");
+    return;
+  }
+  
+  
+  
+  while(top_of_stack!=0){
+    console.log("hell");
+  i=stack[1][top_of_stack];
+  j=stack[2][top_of_stack];
+  dir=stack[3][top_of_stack];
+  back_track[0][count]=i;
+  back_track[1][count]=j;
+  count++;
+  
+  top_of_stack=top_of_stack-1;
+  
+  
+  while(dir<=8){
+    
+      g=i+move[1][dir];
+      h=j+move[2][dir];
+  
+      
+  
+  
+      if(g==m && h==n){
+       
+        
+        
+        
+          for(let p=1;p<=top_of_stack;p++){
+  
+              console.log(stack[1][p]+" "+stack[2][p]+" "+stack[3][p]);
+  
+          }
+  
+          console.log(i+" "+j);
+  
+          console.log(m+" "+n);
+  
+          return;
+  
+  
+  
+  
+      }
+  
+  
+  
+      if(maze[g][h]==0 && mark[g][h]==0){
+  
+  
+        mark[g][h]=2;
+  
+        top_of_stack=top_of_stack+1;
+  
+        stack[1][top_of_stack]=i;
+        stack[2][top_of_stack]=j;
+        stack[3][top_of_stack]=dir;
+  
+        back_track[0][count]=i;
+        back_track[1][count]=j;
+        count++;
+  
+  
+        i=g;
+        j=h;
+  
+        dir=0;
+    
+      }
+  
+  dir=dir+1;
+  }
+  
+  }
+  
+  
+  
+  alert("There is no path");
+  return;
+  }
+  
+  
+  
+  
+  path(maze,mark,m,n,move,stack);
+  
+  
+  console.log(back_track)
+  console.log(count)
+
+  
+  document.getElementById('btn').addEventListener("click",async function()
+    {  
+  for(let a=1;a<count;a++){
+    margin_top+=(back_track[0][a]-back_track[0][a-1])*80;
+    margin_left+=(back_track[1][a]-back_track[1][a-1])*80;
+    image.style.marginTop=margin_top;
+    image.style.marginLeft=margin_left;
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+  }
+  margin_top+=(i-back_track[0][count-1])*80;
+  margin_left+=(j-back_track[1][count-1])*80;
+  image.style.marginTop=margin_top;
+    image.style.marginLeft=margin_left;
+ 
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  margin_top+=(m-i)*80;
+  margin_left+=(n-j)*80;
+  image.style.marginTop=margin_top;
+    image.style.marginLeft=margin_left;
+  
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  let notify=document.getElementById('notify');
+    notify.innerText=" Hurray!! We have helped Jerry to escape from Tom";
+    notify.style.color="white";
+    notify.style.fontWeight="bold";
+    notify.style.fontSize=30;}
+  );
+   
+      </script>
